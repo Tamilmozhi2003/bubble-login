@@ -1,0 +1,1401 @@
+/* ==========================================================================
+   Home.css - Modern 3D Animated Bubble Login Page
+   Inspired by "bubble login.mp4" interaction dynamics with 100% original
+   3D decorative objects, nested animation system, and split-layout transitions.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Page Canvas & Ambient Backdrop
+   -------------------------------------------------------------------------- */
+.page-canvas {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(circle at 18% 25%, rgba(226, 218, 255, 0.5) 0%, transparent 45%),
+    radial-gradient(circle at 82% 75%, rgba(206, 232, 255, 0.5) 0%, transparent 45%),
+    #f8f9fe;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #171822;
+}
+
+.ambient-backdrop-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+.blob-lavender {
+  width: 440px;
+  height: 440px;
+  background: rgba(200, 190, 255, 0.4);
+  top: -100px;
+  left: -80px;
+  animation: backdropFloat 16s ease-in-out infinite alternate;
+}
+
+.blob-sky {
+  width: 460px;
+  height: 460px;
+  background: rgba(188, 225, 255, 0.4);
+  bottom: -120px;
+  right: -90px;
+  animation: backdropFloat 14s ease-in-out infinite alternate-reverse;
+}
+
+.blob-blush {
+  width: 320px;
+  height: 320px;
+  background: rgba(255, 218, 230, 0.35);
+  top: 40%;
+  left: 60%;
+  animation: backdropFloat 18s ease-in-out infinite alternate;
+}
+
+@keyframes backdropFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -24px) scale(1.06); }
+  100% { transform: translate(-20px, 20px) scale(0.96); }
+}
+
+/* --------------------------------------------------------------------------
+   Main Container - 2-State Split Layout
+   -------------------------------------------------------------------------- */
+.login-container {
+  position: relative;
+  z-index: 2;
+  width: 980px;
+  max-width: 95vw;
+  height: 610px;
+  background: #ffffff;
+  border-radius: 36px;
+  display: flex;
+  overflow: hidden;
+  box-shadow:
+    0 24px 60px rgba(28, 38, 70, 0.08),
+    0 8px 24px rgba(28, 38, 70, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   State 1 (Closed) & State 2 (Open) Transition Dynamics
+   -------------------------------------------------------------------------- */
+/* Visual Artwork Section: 100% when closed -> 50% when open */
+.visual-section {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 40% 40%, #f4f6fc 0%, #ebedf5 65%, #e2e5f0 100%);
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+}
+
+/* Login Panel Section: 0% when closed -> 50% when open */
+.login-section {
+  position: relative;
+  width: 0;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transform: translateX(100%);
+  opacity: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition:
+    width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    padding 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ACTIVE STATE 2: LOGIN OPEN (50% Animation / 50% Login Form) */
+.login-container.login-open .visual-section {
+  width: 50%;
+}
+
+.login-container.login-open .login-section {
+  width: 50%;
+  transform: translateX(0);
+  opacity: 1;
+  padding: 28px 48px 24px;
+}
+
+/* Visual Depth Vignette */
+.visual-depth-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(200, 206, 226, 0.25) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   3-Layer Parallax Architecture
+   -------------------------------------------------------------------------- */
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.layer-background { z-index: 2; }
+.layer-middle { z-index: 3; }
+.layer-foreground { z-index: 4; }
+
+/* --------------------------------------------------------------------------
+   Nested Animation System
+   Separates Vertical Float, Drift/Rotate, and Scale to prevent transform clashes
+   -------------------------------------------------------------------------- */
+.bubble-item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 1. Float Keyframes (Vertical) */
+@keyframes floatingY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@keyframes floatingHero {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-18px) scale(1.02); }
+}
+
+.float-dur-4 { animation: floatingY 4s ease-in-out infinite; }
+.float-dur-5 { animation: floatingY 5s ease-in-out infinite; }
+.float-dur-6 { animation: floatingY 6s ease-in-out infinite; }
+.float-dur-7 { animation: floatingY 7s ease-in-out infinite; }
+.float-dur-8 { animation: floatingY 8s ease-in-out infinite; }
+.float-dur-9 { animation: floatingY 9s ease-in-out infinite; }
+.float-hero { animation: floatingHero 6.5s ease-in-out infinite; }
+
+.float-del-1 { animation-delay: 0.8s; }
+.float-del-2 { animation-delay: 1.6s; }
+.float-del-3 { animation-delay: 2.4s; }
+.float-del-4 { animation-delay: 3.2s; }
+
+/* 2. Drift & Rotation Keyframes */
+@keyframes driftX {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(14px); }
+}
+
+@keyframes driftHeroAnim {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-10px); }
+}
+
+@keyframes slowRotateClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slowRotateCounter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes tiltRock {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(12deg); }
+}
+
+@keyframes isometricHover {
+  0%, 100% { transform: rotateX(25deg) rotateY(-20deg) rotateZ(0deg); }
+  50% { transform: rotateX(32deg) rotateY(-14deg) rotateZ(6deg); }
+}
+
+.drift-dur-7 { animation: driftX 7s ease-in-out infinite alternate; }
+.drift-hero { animation: driftHeroAnim 8s ease-in-out infinite alternate; }
+
+.rotate-slow { animation: slowRotateClockwise 22s linear infinite; }
+.rotate-slow-reverse { animation: slowRotateCounter 26s linear infinite; }
+.rotate-tilt-slow { animation: tiltRock 8s ease-in-out infinite alternate; }
+.rotate-tilt-small { animation: tiltRock 6s ease-in-out infinite alternate-reverse; }
+.rotate-tilt-ring { animation: tiltRock 10s ease-in-out infinite alternate; }
+.rotate-prism { animation: slowRotateClockwise 18s linear infinite; }
+.rotate-diamond { animation: slowRotateClockwise 14s linear infinite; }
+.rotate-isometric { animation: isometricHover 7s ease-in-out infinite alternate; }
+
+/* 3. Breathing / Scaling Keyframe */
+@keyframes breathingEffect {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* --------------------------------------------------------------------------
+   ORIGINAL 3D DECORATIVE SHAPES & STYLING (16 Distinct Objects)
+   Soft Pastel 3D Aesthetic: Lavender, Sky Blue, Honey Yellow, Rose Pink
+   -------------------------------------------------------------------------- */
+
+/* 1. Large Transparent Glass Sphere */
+.item-glass-sphere-lg {
+  top: 14%;
+  left: 12%;
+}
+.shape-glass-sphere {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.8) 0%, rgba(240, 244, 255, 0.25) 45%, rgba(210, 222, 250, 0.08) 85%);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset -4px -5px 12px rgba(150, 168, 220, 0.3),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.95),
+    0 14px 28px rgba(70, 80, 120, 0.12);
+  position: relative;
+}
+.shape-glass-sphere::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 20%;
+  width: 28%;
+  height: 18%;
+  background: #ffffff;
+  border-radius: 50%;
+  transform: rotate(-35deg);
+  filter: blur(0.5px);
+}
+
+/* 2. Purple Jelly Blob (Organic morphing) */
+.item-purple-jelly {
+  top: 58%;
+  left: 18%;
+}
+.shape-purple-jelly {
+  width: 76px;
+  height: 72px;
+  border-radius: 58% 42% 64% 36% / 46% 62% 38% 54%;
+  background: radial-gradient(circle at 35% 30%, #c4b5fd 0%, #a78bfa 50%, #7c3aed 100%);
+  box-shadow:
+    inset -4px -6px 14px rgba(76, 29, 149, 0.45),
+    inset 3px 4px 8px rgba(255, 255, 255, 0.8),
+    0 16px 32px rgba(124, 58, 237, 0.25);
+  animation: jellyMorph 8s ease-in-out infinite alternate;
+  position: relative;
+}
+@keyframes jellyMorph {
+  0% { border-radius: 58% 42% 64% 36% / 46% 62% 38% 54%; }
+  50% { border-radius: 44% 56% 38% 62% / 58% 42% 58% 42%; }
+  100% { border-radius: 62% 38% 50% 50% / 40% 60% 40% 60%; }
+}
+.shape-purple-jelly::after {
+  content: '';
+  position: absolute;
+  top: 18%;
+  left: 24%;
+  width: 22%;
+  height: 15%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  transform: rotate(-25deg);
+}
+
+/* 3. Blue Liquid Sphere */
+.item-blue-liquid {
+  top: 18%;
+  right: 18%;
+}
+.shape-blue-liquid {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #bae6fd 0%, #38bdf8 45%, #0284c7 95%);
+  box-shadow:
+    inset -5px -6px 16px rgba(3, 105, 161, 0.5),
+    inset 4px 4px 10px rgba(255, 255, 255, 0.9),
+    0 16px 34px rgba(2, 132, 199, 0.28);
+  position: relative;
+}
+.shape-blue-liquid::after {
+  content: '';
+  position: absolute;
+  top: 16%;
+  left: 20%;
+  width: 26%;
+  height: 16%;
+  background: #ffffff;
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+/* 4. Yellow Translucent Capsule */
+.item-yellow-capsule {
+  bottom: 22%;
+  left: 32%;
+}
+.shape-yellow-capsule {
+  width: 44px;
+  height: 84px;
+  border-radius: 26px;
+  background: radial-gradient(circle at 38% 28%, #fef08a 0%, #facc15 50%, #ca8a04 100%);
+  box-shadow:
+    inset -3px -5px 12px rgba(161, 98, 7, 0.45),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.9),
+    0 14px 28px rgba(202, 138, 4, 0.22);
+  position: relative;
+}
+.shape-yellow-capsule::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 24%;
+  width: 32%;
+  height: 24%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+}
+
+/* 5. Pink Glass Bubble */
+.item-pink-glass {
+  top: 36%;
+  right: 28%;
+}
+.shape-pink-glass {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, rgba(255, 228, 238, 0.9) 0%, rgba(251, 182, 206, 0.35) 50%, rgba(244, 114, 182, 0.15) 85%);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset -3px -4px 10px rgba(219, 39, 119, 0.25),
+    inset 3px 3px 7px rgba(255, 255, 255, 0.9),
+    0 12px 24px rgba(236, 72, 153, 0.15);
+  position: relative;
+}
+.shape-pink-glass::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 22%;
+  width: 25%;
+  height: 16%;
+  background: #ffffff;
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+/* 6. Chrome Ring (Metallic Torus) */
+.item-chrome-ring {
+  top: 24%;
+  left: 28%;
+}
+.shape-chrome-ring {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: conic-gradient(from 45deg, #ffffff 0%, #cbd5e1 25%, #64748b 45%, #ffffff 60%, #94a3b8 80%, #ffffff 100%);
+  mask: radial-gradient(circle, transparent 40%, black 41%);
+  -webkit-mask: radial-gradient(circle, transparent 40%, black 41%);
+  box-shadow: 0 10px 22px rgba(100, 116, 139, 0.3);
+}
+
+/* 7. 3D Rounded Rectangle (Left Side Top Corner) */
+.item-rounded-crystal {
+  top: 15%;
+  left: 17%;
+}
+.shape-crystal {
+  width: 62px;
+  height: 40px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba(224, 231, 255, 0.95) 0%, rgba(165, 180, 252, 0.7) 50%, rgba(129, 140, 248, 0.45) 100%);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 0 12px rgba(255, 255, 255, 0.95),
+    inset -2px -2px 6px rgba(99, 102, 241, 0.25),
+    0 14px 28px rgba(99, 102, 241, 0.22);
+  transform: rotate(-12deg);
+  position: relative;
+}
+.shape-crystal::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  right: 8px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+}
+
+/* 8. Small Transparent Bubbles */
+.item-tiny-bubble-1 { top: 28%; left: 45%; }
+.item-tiny-bubble-2 { bottom: 35%; right: 40%; }
+.shape-tiny-glass {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.25) 50%, transparent 80%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.9), 0 6px 14px rgba(100, 110, 150, 0.12);
+}
+
+/* 9. 3D Rounded Cube */
+.item-rounded-cube {
+  top: 16%;
+  left: 60%;
+}
+.shape-rounded-cube {
+  width: 44px;
+  height: 44px;
+  position: relative;
+}
+.cube-facet {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+}
+.facet-front {
+  background: linear-gradient(145deg, #e0e7ff, #c7d2fe);
+  box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.9), 0 8px 18px rgba(79, 70, 229, 0.18);
+}
+
+/* 9b. 3D Triangle Prism (From Reference Video) */
+.item-3d-triangle {
+  bottom: 8%;
+  right: 27%;
+}
+
+.shape-3d-triangle {
+  width: 52px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 12px 24px rgba(29, 78, 216, 0.38));
+  transition: transform 0.3s ease;
+}
+
+.shape-3d-triangle:hover {
+  transform: scale(1.1) translateY(-4px);
+}
+
+/* 10. Floating Diamond */
+.item-floating-diamond {
+  bottom: 20%;
+  right: 15%;
+}
+.shape-diamond {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 60%, #db2777 100%);
+  box-shadow:
+    inset -2px -2px 6px rgba(157, 23, 77, 0.4),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.9),
+    0 10px 20px rgba(219, 39, 119, 0.25);
+  transform: rotate(45deg);
+}
+
+/* 11. Metallic Sphere */
+.item-metallic-sphere {
+  bottom: 16%;
+  left: 12%;
+}
+.shape-metallic-sphere {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 28%, #ffffff 0%, #e2e8f0 35%, #94a3b8 70%, #475569 100%);
+  box-shadow:
+    inset -3px -3px 8px rgba(30, 41, 59, 0.5),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.95),
+    0 12px 24px rgba(71, 85, 105, 0.22);
+}
+
+/* 12. Irregular Organic Blob */
+.item-organic-blob {
+  top: 72%;
+  left: 48%;
+}
+.shape-organic-blob {
+  width: 56px;
+  height: 48px;
+  border-radius: 65% 35% 58% 42% / 38% 55% 45% 62%;
+  background: radial-gradient(circle at 35% 30%, #fed7aa 0%, #fb923c 60%, #ea580c 100%);
+  box-shadow:
+    inset -3px -4px 9px rgba(154, 52, 18, 0.4),
+    inset 2px 3px 6px rgba(255, 255, 255, 0.85),
+    0 12px 22px rgba(234, 88, 12, 0.2);
+}
+
+/* 13. Small Glowing Orb */
+.item-glowing-orb {
+  top: 48%;
+  right: 12%;
+}
+.shape-glowing-orb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fef08a 0%, #fde047 50%, rgba(234, 179, 8, 0.4) 100%);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.6), 0 4px 10px rgba(202, 138, 4, 0.25);
+  animation: orbGlow 3.5s ease-in-out infinite alternate;
+}
+@keyframes orbGlow {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+/* 14. Thin Glass Ring */
+.item-thin-glass-ring {
+  top: 42%;
+  left: 8%;
+}
+.shape-glass-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 0 6px rgba(255, 255, 255, 0.8),
+    0 8px 18px rgba(120, 140, 180, 0.12);
+}
+
+/* 15. Small Capsule */
+.item-small-capsule {
+  top: 12%;
+  left: 40%;
+}
+.shape-small-capsule {
+  width: 22px;
+  height: 40px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 35% 30%, #ddd6fe 0%, #a78bfa 60%, #8b5cf6 100%);
+  box-shadow: inset 1px 2px 4px rgba(255, 255, 255, 0.9), 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   16. ONE LARGE CENTRAL HERO BUBBLE (Original Soft Iridescent 3D Orb)
+   -------------------------------------------------------------------------- */
+.item-hero-bubble {
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.shape-hero-bubble {
+  position: relative;
+  width: 195px;
+  height: 195px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f3e8ff 0%,
+    #d8b4fe 30%,
+    #a855f7 65%,
+    #7e22ce 100%
+  );
+  box-shadow:
+    inset -10px -12px 28px rgba(88, 28, 135, 0.6),
+    inset 8px 8px 18px rgba(255, 255, 255, 0.95),
+    0 28px 60px -10px rgba(126, 34, 206, 0.35),
+    0 10px 24px rgba(126, 34, 206, 0.15);
+  animation: breathingEffect 7s ease-in-out infinite alternate;
+}
+
+/* Primary Specular Crescent Reflection */
+.hero-specular-primary {
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 32%;
+  height: 20%;
+  background: radial-gradient(ellipse at center, #ffffff 0%, rgba(255, 255, 255, 0.8) 60%, transparent 100%);
+  border-radius: 50%;
+  transform: rotate(-38deg);
+  filter: blur(0.5px);
+}
+
+/* Secondary Soft Rim Reflection */
+.hero-specular-secondary {
+  position: absolute;
+  top: 28%;
+  left: 14%;
+  width: 14%;
+  height: 10%;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transform: rotate(-25deg);
+}
+
+/* Inner Caustic Highlight */
+.hero-inner-caustic {
+  position: absolute;
+  bottom: 18%;
+  right: 22%;
+  width: 38%;
+  height: 24%;
+  background: radial-gradient(ellipse, rgba(233, 213, 255, 0.5) 0%, transparent 80%);
+  border-radius: 50%;
+  transform: rotate(25deg);
+}
+
+/* Bottom Ambient Floor Glow */
+.hero-bottom-glow {
+  position: absolute;
+  bottom: 8%;
+  left: 25%;
+  width: 50%;
+  height: 16%;
+  background: radial-gradient(ellipse, rgba(192, 132, 252, 0.4) 0%, transparent 75%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Cute Character Face inside Hero Bubble (Eyes & Mouth)
+   Inspired by Reference Video and Uploaded Character Details
+   -------------------------------------------------------------------------- */
+.bubble-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16px;
+  pointer-events: none;
+  z-index: 5;
+  user-select: none;
+}
+
+/* Eyes Container */
+.bubble-eyes-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  transition: transform 0.08s ease-out;
+  will-change: transform;
+}
+
+/* Smooth spring transition when looking away for password */
+.password-mode .bubble-eyes-wrapper {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.happy-mode .bubble-eyes-wrapper {
+  transition: transform 0.25s ease;
+  transform: scale(1.08) !important;
+}
+
+/* Individual Eye Unit */
+.bubble-eye {
+  width: 17px;
+  height: 26px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+  transform-origin: center center;
+}
+
+/* Blinking Animation State */
+.blinking .bubble-eye {
+  transform: scaleY(0.08);
+}
+
+/* Glossy Capsule/Pill Eye Shape */
+.eye-pill {
+  width: 100%;
+  height: 100%;
+  background: #121118;
+  border-radius: 13px;
+  position: relative;
+  box-shadow:
+    0 3px 8px rgba(18, 17, 24, 0.42),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Primary Top-Right Eye Highlight */
+.eye-glint {
+  position: absolute;
+  top: 3.5px;
+  right: 3px;
+  width: 5.5px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.9));
+}
+
+/* Secondary Subtle Rim Sparkle */
+.eye-glint-sub {
+  position: absolute;
+  bottom: 3.5px;
+  left: 3.5px;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+/* Mouth Container */
+.bubble-mouth-wrapper {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+.password-mode .bubble-mouth-wrapper {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Normal Sweet Curved Smile */
+.bubble-mouth-smile {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(18, 17, 24, 0.28));
+  transition: all 0.2s ease;
+}
+
+/* Password Whistling / Looking Away Small Round Mouth */
+.bubble-mouth-whistle {
+  width: 13px;
+  height: 14px;
+  background: #121118;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.8),
+    0 2px 5px rgba(18, 17, 24, 0.3);
+  animation: whistlePop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes whistlePop {
+  0% { transform: scale(0.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Login CTA Trigger inside the Artwork
+   Clearly visible when closed; smooth fade out when open
+   -------------------------------------------------------------------------- */
+.login-trigger-wrapper {
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition:
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    pointer-events 0.2s ease;
+}
+
+.login-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 34px;
+  border-radius: 9999px;
+  background: #171822;
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0 12px 28px -4px rgba(23, 24, 34, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.login-trigger-btn:hover {
+  background: #2b2d3c;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 16px 36px -4px rgba(23, 24, 34, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+}
+
+.trigger-arrow {
+  font-size: 16px;
+  transition: transform 0.25s ease;
+}
+
+.login-trigger-btn:hover .trigger-arrow {
+  transform: translateX(4px);
+}
+
+.trigger-subtext {
+  font-size: 12px;
+  font-weight: 500;
+  color: #7b8096;
+}
+
+/* When Login is open, fade out trigger smoothly */
+.login-container.login-open .login-trigger-wrapper {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(16px);
+}
+
+/* --------------------------------------------------------------------------
+   Login Section & Close Button
+   -------------------------------------------------------------------------- */
+.login-close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #f4f5f9;
+  color: #64687d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.login-close-btn:hover {
+  background: #e7e9f2;
+  color: #171822;
+  transform: scale(1.08) rotate(90deg);
+}
+
+/* --------------------------------------------------------------------------
+   Staggered Login Entrance Animations
+   Step 1 (Panel) -> Step 2 (Logo) -> Step 3 (Heading) -> ...
+   -------------------------------------------------------------------------- */
+.login-content-stagger {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Stagger timings when .login-open is active */
+.login-container.login-open .stagger-logo {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.08s;
+}
+
+.login-container.login-open .stagger-heading {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.12s;
+}
+
+.login-container.login-open .stagger-subtitle {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.16s;
+}
+
+.login-container.login-open .stagger-email {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.20s;
+}
+
+.login-container.login-open .stagger-password {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.24s;
+}
+
+.login-container.login-open .stagger-options {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.28s;
+}
+
+.login-container.login-open .stagger-button {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.32s;
+}
+
+.login-container.login-open .stagger-footer {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.36s;
+}
+
+/* --------------------------------------------------------------------------
+   Login Form Typography & Components
+   -------------------------------------------------------------------------- */
+/* Brand Badge */
+.brand-badge-kreative {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.brand-title-kreative {
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #171822;
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.brand-logo-gem {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35);
+}
+
+.gem-facet {
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border-radius: 3px;
+  transform: rotate(45deg);
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #171822;
+}
+
+/* Headings */
+.login-title {
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: #171822;
+  margin: 0 0 6px 0;
+  line-height: 1.15;
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: #9aa0b4;
+  font-weight: 500;
+  margin: 0 0 24px 0;
+}
+
+/* Form inputs */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #65697d;
+}
+
+.field-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clean-text-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px solid #e2e5ee;
+  background: transparent;
+  padding: 8px 0;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: #171822;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.clean-text-input::placeholder {
+  color: #b8bccb;
+  font-weight: 400;
+}
+
+.input-focus-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #171822;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.clean-text-input:focus ~ .input-focus-line {
+  transform: scaleX(1);
+}
+
+.password-box .password-input {
+  padding-right: 32px;
+  letter-spacing: 1px;
+}
+
+.password-eye-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #7b8094;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.password-eye-btn:hover {
+  color: #171822;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Options Row (Remember Me / Forgot) */
+.form-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-top: -2px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  color: #65697d;
+  font-weight: 500;
+}
+
+.native-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.styled-checkbox {
+  width: 17px;
+  height: 17px;
+  border-radius: 5px;
+  border: 1.5px solid #d0d4e2;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.check-icon {
+  width: 11px;
+  height: 9px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.native-checkbox:checked + .styled-checkbox {
+  background: #171822;
+  border-color: #171822;
+}
+
+.native-checkbox:checked + .styled-checkbox .check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.forgot-link {
+  color: #8c90a2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: #171822;
+  text-decoration: underline;
+}
+
+/* Form Action Group & Buttons */
+.form-action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.submit-login-btn {
+  width: 100%;
+  height: 46px;
+  border-radius: 9999px;
+  background: #171822;
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px -4px rgba(23, 24, 34, 0.32);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.submit-login-btn:hover {
+  background: #2b2d3c;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(23, 24, 34, 0.42);
+}
+
+.submit-login-btn.success {
+  background: #10b981;
+  box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.4);
+}
+
+.submit-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spinLoader 0.75s linear infinite;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+
+/* Divider */
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e7eaf2;
+}
+
+.divider-text {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #b0b4c4;
+}
+
+/* Google Auth Button */
+.google-auth-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 9999px;
+  background: #f5f6fa;
+  border: 1px solid #e7e9f2;
+  color: #272836;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.google-auth-btn:hover {
+  background: #ebeef5;
+  border-color: #dce0ed;
+  transform: translateY(-1px);
+}
+
+.google-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Signup Footer */
+.signup-prompt {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.prompt-muted {
+  color: #8c90a2;
+}
+
+.prompt-signup-link {
+  color: #171822;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 5px;
+  transition: color 0.2s ease;
+}
+
+.prompt-signup-link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Design: Tablet & Mobile
+   -------------------------------------------------------------------------- */
+/* Tablet */
+@media (max-width: 900px) {
+  .login-container {
+    width: 92vw;
+    height: 580px;
+  }
+
+  .login-container.login-open .visual-section {
+    width: 60%;
+  }
+
+  .login-container.login-open .login-section {
+    width: 40%;
+    padding: 30px 24px 26px;
+  }
+}
+
+/* Mobile: Bottom-up Slide Transition instead of horizontal split */
+@media (max-width: 680px) {
+  .login-container {
+    flex-direction: column;
+    width: 94vw;
+    max-width: 440px;
+    height: 620px;
+    border-radius: 30px;
+  }
+
+  /* When closed on mobile: visual takes full height */
+  .visual-section {
+    width: 100% !important;
+    height: 100%;
+    transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* When open on mobile: visual shrinks to top header */
+  .login-container.login-open .visual-section {
+    height: 38%;
+  }
+
+  /* Login panel on mobile slides from bottom: translateY(100%) -> translateY(0) */
+  .login-section {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100% !important;
+    height: 64%;
+    transform: translateY(100%);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .login-container.login-open .login-section {
+    transform: translateY(0);
+    padding: 24px 20px 20px;
+  }
+
+  .login-close-btn {
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .item-hero-bubble .shape-hero-bubble {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
